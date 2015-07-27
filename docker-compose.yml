@@ -1,0 +1,16 @@
+gocdserver:
+  image: gocd/gocd-server 
+  ports:
+    - "8153:8153"
+  volumes_from:
+    - gocddata
+gocdagent1:
+  image: nice-gocdagent
+  links:
+    - gocdserver:go-server
+gocddata:
+  image: phusion/baseimage
+  volumes:
+    - /var/lib/go-server/
+    - /var/log/go-server/
+    - /etc/go/
