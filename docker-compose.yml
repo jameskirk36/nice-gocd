@@ -6,3 +6,8 @@ gocdagent1:
   image: nice-gocdagent
   links:
     - gocdserver:go-server
+gocdagentdocker1:
+  image: nice-gocdagent-docker
+  links:
+    - gocdserver:go-server
+  privileged: true
