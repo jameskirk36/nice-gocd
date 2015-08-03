@@ -33,3 +33,5 @@ RUN mozroots --import --sync  &&\
     yes | certmgr --ssl -m https://go.microsoft.com &&\
     yes | certmgr -ssl -m https://nugetgallery.blob.core.windows.net &&\
     yes | certmgr -ssl -m https://nuget.org
+
+RUN adduser go sudo
