@@ -39,7 +39,6 @@ ADD xvfb_init /etc/init.d/xvfb
 ADD xvfb-daemon-run /usr/bin/xvfb-daemon-run
 
 RUN chmod a+x /etc/init.d/xvfb &&\
-    chmod a+x /usr/bin/xvfb-daemon-run &&\
-    chown go /var
+    chmod a+x /usr/bin/xvfb-daemon-run
 
 
