@@ -32,13 +32,3 @@ RUN mozroots --import --sync  &&\
     yes | certmgr --ssl -m https://go.microsoft.com &&\
     yes | certmgr -ssl -m https://nugetgallery.blob.core.windows.net &&\
     yes | certmgr -ssl -m https://nuget.org
-
-# Install Xvfb 
-ENV DISPLAY :99
-ADD xvfb_init /etc/init.d/xvfb 
-ADD xvfb-daemon-run /usr/bin/xvfb-daemon-run
-
-RUN chmod a+x /etc/init.d/xvfb &&\
-    chmod a+x /usr/bin/xvfb-daemon-run
-
-
