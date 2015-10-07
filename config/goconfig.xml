@@ -1,0 +1,105 @@
+
+  <pipelines group="QA">
+    <pipeline name="KB-QualityStandards-Test" labeltemplate="${ld-kb-qs[:7]}" isLocked="true">
+      <environmentvariables>
+        <variable name="TARGET_MACHINE">
+          <value>192.168.142.152</value>
+        </variable>
+        <variable name="USERNAME">
+          <value>goagent</value>
+        </variable>
+      </environmentvariables>
+      <materials>
+        <git url="https://github.com/nhsevidence/ld-kb-qs.git" dest="ld-kb-qs" materialName="ld-kb-qs" />
+        <git url="https://github.com/jameskirk84/automation_scripts.git" dest="automation_scripts" autoUpdate="false" materialName="automation_scripts" />
+      </materials>
+      <stage name="deploy" cleanWorkingDir="true">
+        <approval type="manual" />
+        <jobs>
+          <job name="deploy">
+            <tasks>
+              <exec command="bundle" workingdir="automation_scripts">
+                <arg>install</arg>
+                <arg>--path</arg>
+                <arg>.gems/</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="./deploy_docker.sh" workingdir="automation_scripts">
+                <arg>ld-kb-qs</arg>
+                <arg>https://github.com/nhsevidence/ld-kb-qs.git</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+            <resources>
+              <resource>deploy</resource>
+            </resources>
+          </job>
+        </jobs>
+      </stage>
+      <stage name="acceptance-tests" cleanWorkingDir="true">
+        <environmentvariables>
+          <variable name="VIEWER_URL">
+            <value>http://192.168.142.152:8083</value>
+          </variable>
+          <variable name="ES_URL">
+            <value>http://192.168.142.152:9200</value>
+          </variable>
+        </environmentvariables>
+        <jobs>
+          <job name="acceptance-tests">
+            <tasks>
+              <exec command="xvfb-run" workingdir="ld-kb-qs/acceptance-tests">
+                <arg>./build.sh</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+            <resources>
+              <resource>deploy</resource>
+            </resources>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+  <pipelines group="LIVE">
+    <pipeline name="KB-QualityStandards-LIVE" labeltemplate="${ld-kb-qs-test[:7]}" isLocked="true">
+      <environmentvariables>
+        <variable name="TARGET_MACHINE">
+          <value>46.101.6.73</value>
+        </variable>
+        <variable name="USERNAME">
+          <value>goagent</value>
+        </variable>
+      </environmentvariables>
+      <materials>
+        <pipeline pipelineName="KB-QualityStandards-Test" stageName="acceptance-tests" materialName="ld-kb-qs-test" />
+        <git url="https://github.com/nhsevidence/ld-kb-qs.git" dest="ld-kb-qs" materialName="ld-kb-qs" />
+        <git url="https://github.com/jameskirk84/automation_scripts.git" dest="automation_scripts" autoUpdate="false" materialName="automation_scripts" />
+      </materials>
+      <stage name="deploy" cleanWorkingDir="true">
+        <approval type="manual" />
+        <jobs>
+          <job name="deploy">
+            <tasks>
+              <exec command="bundle" workingdir="automation_scripts">
+                <arg>install</arg>
+                <arg>--path</arg>
+                <arg>.gems/</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="./deploy_docker.sh" workingdir="automation_scripts">
+                <arg>ld-kb-qs</arg>
+                <arg>https://github.com/nhsevidence/ld-kb-qs.git</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+            <resources>
+              <resource>deploy</resource>
+            </resources>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+
+
